@@ -7,6 +7,10 @@ import Render
 --
 -- * Semantics of MiniMiniLogo
 --
+-- Ryan Wallerius: ONID: wallerir
+-- Daniyal Abbas ONID: abbasd
+-- Date: 07-29-2019
+-- HW 3
 
 -- NOTE:
 --  * MiniMiniLogo.hs defines the abstract syntax of MiniMiniLogo and some
@@ -54,8 +58,13 @@ draw p = let (_,ls) = prog p start in toHTML ls
 -- cmd:: Cmd    ->      State           State        Maybe Line
 -- cmd will be in the form of: Pen mode | Move Int Int
 -- The "Base cases" for this follow this format
+
 cmd :: Cmd -> State -> (State, Maybe Line)
-cmd = undefined 
+cmd (Pen Up) (_, poi) = ((Up, poi), Nothing) --Base case for Up
+cmd (Pen Down) (_, poi) = ((Down, poi), Nothing) --Base case for Down
+cmd (Move x1 y1) (m, (x2, y2)) = case m of -- Just like in class for cmd equ and add
+                              Up   -> ((Up, (x1, y1)), Nothing)
+                              Down -> ((Down, (x1, y1)), Just ((x2, y2),(x1, y1)))
 
 
 -- | Semantic function for Prog.
@@ -67,8 +76,10 @@ cmd = undefined
 --   ((Down,(2,2)),[((0,0),(0,1)),((0,1),(1,1)),((1,1),(1,2)),((1,2),(2,2))])
 --
 prog :: Prog -> State -> (State, [Line])
-prog = undefined
-
+prog [] st = (st, [])
+prog (h:t) st  = case cmd h st of
+    (x, Just he) -> (\(st, t) -> (st, he:t)) $ prog t x
+    (x, Nothing) -> prog t x
 
 --
 -- * Extra credit
@@ -77,4 +88,7 @@ prog = undefined
 -- | This should be a MiniMiniLogo program that draws an amazing picture.
 --   Add as many helper functions as you want.
 amazing :: Prog
-amazing = undefined
+amazing = ?
+
+square:: Int -> Int -> Prog
+square x z = [Pen Up, Move x z, Pen Down, Move (x+1) (z), Move  (x+1) (z +1), Move  (x) (z+1), Move x z]
